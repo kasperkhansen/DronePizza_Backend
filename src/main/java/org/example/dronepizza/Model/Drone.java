@@ -1,11 +1,15 @@
 package org.example.dronepizza.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+
 public class Drone {
 
     @Id
@@ -18,6 +22,7 @@ public class Drone {
     private Station station;
 
     @OneToMany(mappedBy = "drone")
+    @JsonBackReference
     private List<Levering> leveringer = new ArrayList<>();
 
     public Drone() {

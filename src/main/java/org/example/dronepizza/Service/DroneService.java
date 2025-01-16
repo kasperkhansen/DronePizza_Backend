@@ -38,10 +38,7 @@ public class DroneService {
                 .min(Comparator.comparingInt(s -> s.getDroner().size()))
                 .orElseThrow();
 
-        Drone newDrone = new Drone();
-        newDrone.setUuid(UUID.randomUUID().toString());
-        newDrone.setStatus("i drift");
-        newDrone.setStation(stationWithFewestDrones);
+        Drone newDrone = new Drone(UUID.randomUUID().toString(), "i drift", stationWithFewestDrones);
         droneRepository.save(newDrone);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Drone tilføjet.");
@@ -53,9 +50,8 @@ public class DroneService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Drone blev ikke fundet.");
         }
 
-        Drone drone = droneOptional.get();
-        drone.setStatus(status);
-        droneRepository.save(drone);
+        droneOptional.get().setStatus(status);
+        droneRepository.save(droneOptional.get());
         return ResponseEntity.ok("Drone status updateret til " + status + ".");
     }
 }

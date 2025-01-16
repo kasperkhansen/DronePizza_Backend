@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/levering")
+@RequestMapping("/api/deliveries")
 public class LeveringController {
 
     private final LeveringService leveringService;
@@ -20,10 +20,11 @@ public class LeveringController {
 
     @GetMapping
     public List<Levering> getAlleIkkeLeveret() {
-        return leveringService.getAllIkkeLeveret();
+        List<Levering> leveringList = leveringService.getAllIkkeLeveret();
+        return leveringList;
     }
 
-    @GetMapping("/add")
+    @PostMapping("/add")
     public ResponseEntity<String> addLevering(@RequestParam Long pizzaId, @RequestParam String adresse) {
         return leveringService.addLevering(pizzaId, adresse);
     }
@@ -34,7 +35,7 @@ public class LeveringController {
     }
 
     @PostMapping("/{id}/plan")
-    public ResponseEntity<String> planlægLevering(@PathVariable Long id, @RequestParam Long droneId) {
+    public ResponseEntity<String> planlægLevering(@PathVariable Long id, @RequestParam("droneId") Long droneId) {
         return leveringService.planlægLevering(id, droneId);
     }
 

@@ -28,9 +28,7 @@ public class LeveringService {
     }
 
     public List<Levering> getAllIkkeLeveret(){
-        return leveringRepository.findAll().stream()
-                .filter(levering -> levering.getLeveretTidspunkt() == null)
-                .toList();
+        return leveringRepository.findAll();
     }
 
     public ResponseEntity<String> addLevering(Long pizzaId, String adresse){
@@ -39,10 +37,7 @@ public class LeveringService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Pizza blev ikke fundet.");
         }
 
-        Levering nyLevering = new Levering();
-        nyLevering.setPizza(pizzaOptional.get());
-        nyLevering.setAdresse(adresse);
-        nyLevering.setForventetTidspunkt(LocalDateTime.now().plusMinutes(30));
+        Levering nyLevering = new Levering(adresse, LocalDateTime.now().plusMinutes(30), pizzaOptional.get(), null);
         leveringRepository.save(nyLevering);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Levering tilføjet.");
@@ -65,25 +60,14 @@ public class LeveringService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Levering er allerede planlagt.");
         }
 
-        Drone drone;
         if (droneId != null){
             Optional<Drone> droneOptional = droneRepository.findById(droneId);
-            if(droneOptional.isEmpty() || !"i drift".equals(droneOptional.get().getStatus())){
+            if(droneOptional.isEmpty() || !"i drift".equals(droneOptional.get().getStatus())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Drone blev ikke fundet eller er ikke i drift.");
             }
-            drone = droneOptional.get();
-        }
-        else {
-            drone = droneRepository.findAll().stream()
-                    .filter(d -> "i drift".equals(d.getStatus()))
-                    .findFirst()
-                    .orElse(null);
-            if (drone == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ingen droner er tilgængelige.");
-            }
+            levering.setDrone(droneOptional.get());
         }
 
-        levering.setDrone(drone);
         leveringRepository.save(levering);
         return ResponseEntity.ok("Levering planlagt.");
     }

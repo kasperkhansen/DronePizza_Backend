@@ -1,5 +1,7 @@
 package org.example.dronepizza.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -14,10 +16,15 @@ public class Levering {
     private LocalDateTime forventetTidspunkt;
     private LocalDateTime leveretTidspunkt;
 
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonBackReference
+    @JoinColumn(name = "pizza_id", referencedColumnName = "id")
     private Pizza pizza;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonBackReference
+    @JoinColumn(name = "drone_id", referencedColumnName = "id")
     private Drone drone;
 
     public Levering() {
